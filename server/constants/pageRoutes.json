@@ -1,0 +1,84 @@
+{
+  "sidebar": {
+    "base": {
+      "student": [
+        {
+          "title": "Library",
+          "url": "/app/library",
+          "icon": "ListIcon"
+        },
+        {
+          "title": "Homework",
+          "url": "/app/homework",
+          "icon": "ListIcon"
+        },
+        {
+          "title": "Calendar",
+          "url": "/app/calendar",
+          "icon": "ListIcon"
+        }
+      ],
+      "teacher": [
+        {
+          "title": "Library",
+          "url": "/app/library",
+          "icon": "ListIcon"
+        },
+        {
+          "title": "Classes",
+          "url": "/app/classes-list",
+          "icon": "ListIcon"
+        },
+        {
+          "title": "Calendar",
+          "url": "/app/calendar",
+          "icon": "ListIcon"
+        }
+      ]
+    },
+    "perm": {
+      "librarian": [
+        {
+          "title": "Borrowed Books",
+          "url": "/app/library/borrowed-books",
+          "icon": "ListIcon"
+        },
+        {
+          "title": "All Books",
+          "url": "/app/library/books",
+          "icon": "ListIcon"
+        }
+      ],
+      "event-manager": [
+        {
+          "title": "Events List",
+          "url": "/app/calendar/events-list",
+          "icon": "ListIcon"
+        }
+      ],
+      "teacher": [
+        {
+          "title": "Homework",
+          "url": "/app/homework",
+          "icon": "ListIcon"
+        }
+      ]
+    },
+    "private": {
+      "student": [
+        {
+          "title": "Borrowed Books",
+          "url": "/app/borrowed-books",
+          "icon": "ListIcon"
+        }
+      ],
+      "teacher": [
+        {
+          "title": "Borrowed Books",
+          "url": "/app/borrowed-books",
+          "icon": "ListIcon"
+        }
+      ]
+    }
+  }
+}
