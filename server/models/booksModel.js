@@ -11,7 +11,7 @@ const bookSchema = new mongoose.Schema({
   available: { type: Number },
   total: { type: Number },
   borrowed: { type: Number, default: 0 },
-  genre: [{ type: String }],
+  categories: [{ type: String }],
   summary: { type: String },
   coverUrl: { type: String, required: true },
 });

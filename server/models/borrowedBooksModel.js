@@ -7,10 +7,14 @@ const borrowedBooksSchema = new mongoose.Schema({
   borrowedDate: { type: Date, required: true, default: Date.now },
   returnDate: { type: Date },
   fine: { type: Number, default: 0 },
-  studentId: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
+  },
+  approved: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -18,4 +22,4 @@ const borrowedBooksModel =
   mongoose.model.borrowedBooks ||
   mongoose.model("borrowed-books", borrowedBooksSchema);
 
-export default borrowedBooksSchema;
+export default borrowedBooksModel;

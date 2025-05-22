@@ -1,31 +1,304 @@
+import bookModel from "../models/booksModel.js";
+import borrowedBooksModel from "../models/borrowedBooksModel.js";
+
 export const librarianLend = async (req, res) => {
+  const { bookId, returnDate } = req.body;
   const userId = req.userId;
 
-  // get the data from the req.body
+  if (!bookId || !userId || !returnDate) {
+    return res.json({
+      success: false,
+      message: "Missing Details",
+    });
+  }
 
-  // use data to create borrowedBook doc
+  try {
+    const book = await bookModel.findById(bookId);
 
-  // bind the borrowedBook doc to the student and book
+    if (!book) {
+      return res.json({
+        success: false,
+        message: "Book not found",
+      });
+    }
+
+    if (book.available <= 0) {
+      return res.json({
+        success: false,
+        message: "Book is currently unavailable",
+      });
+    }
+
+    await BorrowedBook.create({
+      bookId,
+      bookTitle: book.title,
+      borrowedDate: new Date(),
+      returnDate,
+      userId,
+      approved: true,
+    });
+
+    book.available--;
+    book.borrowed++;
+
+    await book.save();
+
+    return res.json({
+      success: true,
+      message: "Book successfully lent",
+    });
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const studentBorrow = async (req, res) => {
+  const { bookId, returnDate } = req.body;
+  const userId = req.userId;
+
+  if (!bookId || !userId || !returnDate) {
+    return res.json({
+      success: false,
+      message: "Missing Details",
+    });
+  }
+
+  try {
+    const book = await bookModel.findById(bookId);
+
+    if (!book) {
+      return res.json({
+        success: false,
+        message: "Book not found",
+      });
+    }
+
+    if (book.available <= 0) {
+      return res.json({
+        success: false,
+        message: "Book is currently unavailable",
+      });
+    }
+
+    await BorrowedBook.create({
+      bookId,
+      bookTitle: book.title,
+      borrowedDate: new Date(),
+      returnDate,
+      userId,
+      approved: false,
+    });
+
+    book.available--;
+    book.borrowed++;
+
+    await book.save();
+
+    return res.json({
+      success: true,
+      message: "Book successfully borrowed",
+    });
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const approveBorrow = async (req, res) => {
+  const { borrowedBookId } = req.body;
+
+  if (!borrowedBookId) {
+    return res.json({
+      success: false,
+      message: "Missing details",
+    });
+  }
+
+  try {
+    const borrowedBook = await borrowedBooksModel.findById(borrowedBookId);
+
+    if (!borrowedBook) {
+      return res.json({ success: false, message: "Borrowed book not found" });
+    }
+
+    borrowedBook.approve = true;
+
+    await borrowedBook.save();
+
+    res.json({
+      success: true,
+      message: "Borrow successfully approved",
+    });
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 export const librarianFine = async (req, res) => {
-  const { fine, bookId } = req.body;
+  const { fine, borrowedBookId } = req.body;
 
-  // get the borrowed book object with bookId
+  if (!fine || !borrowedBookId) {
+    return res.json({ success: false, message: "Missing Details" });
+  }
 
-  // set the fine to the number in the req.body
+  try {
+    const borrowedBook = await borrowedBooksModel.findById(borrowedBookId);
+
+    if (!borrowedBook) {
+      return res.json({
+        success: false,
+        message: "Borrowed book not Found",
+      });
+    }
+
+    if (borrowedBook.fine === 0) {
+      borrowedBook.fine = fine;
+    }
+
+    if (borrowedBook.fine >= 0) {
+      borrowedBook.fine += fine;
+    }
+
+    return res.json({
+      success: true,
+      message: "Fine successfully added",
+    });
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 export const librarianReturned = async (req, res) => {
-  const userId = req.userId;
+  const { borrowedBookId } = req.body;
 
-  // get the userId, borrowedBookId and bookId
+  if (!borrowedBookId) {
+    return res.json({ success: false, message: "Missing Details" });
+  }
 
-  // get the data from ids and store them in variables
+  try {
+    const borrowedBook = await borrowedBooksModel.findById(borrowedBookId);
+    const book = await bookModel.findbyId(borrowedBook.bookId);
+    const user = await userModel.findById(borrowedBook.userId);
 
-  // delete borrowedBook doc
+    if (!borrowedBook) {
+      return res.json({
+        success: false,
+        message: "Borrowed book not Found",
+      });
+    }
 
-  // add one to available boooks of that book
+    if (!book) {
+      return res.json({
+        success: false,
+        message: "Book not Found",
+      });
+    }
 
-  // subtract one from the borrowed books of that books
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "User not Found",
+      });
+    }
+
+    user.totalFines += borrowedBook.fine;
+    book.available++;
+    book.borrowed--;
+
+    await borrowedBook.drop();
+    await book.save();
+    await user.save();
+
+    return res.json({
+      success: true,
+      message: "Book successfully returned",
+    });
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const addBook = async (req, res) => {
+  const { title, author, ratings, coverUrl, total, summary, categories } =
+    req.body;
+
+  if (!title || !total) {
+    return res.json({
+      success: false,
+      message: "Insufficient Details",
+    });
+  }
+
+  try {
+    const available = total;
+    book.create({
+      title: title,
+      author: author,
+      ratings: { count: ratings },
+      coverUrl: coverUrl,
+      total: total,
+      available: available,
+      borrowed: total - available,
+      summary: summary,
+      categories: categories,
+    });
+
+    return res.json({
+      success: true,
+      message: "Successfully added book",
+    });
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const incrementTotal = async (req, res) => {
+  const { bookId, incrementDirection } = req.body;
+
+  if (!bookId) {
+    return res.json({
+      success: false,
+      message: "Missing Details",
+    });
+  }
+
+  try {
+    const book = await bookModel.findById(bookId);
+
+    if (incrementDirection === "plus") {
+      book.total++;
+    }
+    if (incrementDirection === "minus") {
+      book.total--;
+    }
+
+    await book.save();
+
+    return res.json({
+      success: true,
+      message: "Successfully incremented total",
+    });
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: error.message,
+    });
+  }
 };

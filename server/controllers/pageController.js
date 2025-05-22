@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 
 // files
 import userModel from "../models/userModel.js";
-import pageRoutes from "../constants/pageRoutes.json";
 
 // librarian
 

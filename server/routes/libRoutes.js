@@ -2,8 +2,12 @@
 import express from "express";
 
 // files
-import librarianAuth from "../middleware/LibrarianAuth";
-import { librarianLend } from "../controllers/libController";
+import librarianAuth from "../middleware/LibrarianAuth.js";
+import {
+  librarianLend,
+  librarianFine,
+  librarianReturned,
+} from "../controllers/libraryPerms.js";
 
 const libRouter = express.Router();
 
