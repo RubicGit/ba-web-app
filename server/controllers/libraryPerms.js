@@ -29,7 +29,7 @@ export const librarianLend = async (req, res) => {
       });
     }
 
-    await BorrowedBook.create({
+    await borrowedBooksModel.create({
       bookId,
       bookTitle: book.title,
       borrowedDate: new Date(),
@@ -55,7 +55,7 @@ export const librarianLend = async (req, res) => {
   }
 };
 
-export const studentBorrow = async (req, res) => {
+export const userBorrow = async (req, res) => {
   const { bookId, returnDate } = req.body;
   const userId = req.userId;
 
@@ -126,7 +126,7 @@ export const approveBorrow = async (req, res) => {
       return res.json({ success: false, message: "Borrowed book not found" });
     }
 
-    borrowedBook.approve = true;
+    borrowedBook.approved = true;
 
     await borrowedBook.save();
 
@@ -159,13 +159,8 @@ export const librarianFine = async (req, res) => {
       });
     }
 
-    if (borrowedBook.fine === 0) {
-      borrowedBook.fine = fine;
-    }
-
-    if (borrowedBook.fine >= 0) {
-      borrowedBook.fine += fine;
-    }
+    borrowedBook.fine = (borrowedBook.fine || 0) + fine;
+    await borrowedBook.save();
 
     return res.json({
       success: true,
@@ -188,7 +183,7 @@ export const librarianReturned = async (req, res) => {
 
   try {
     const borrowedBook = await borrowedBooksModel.findById(borrowedBookId);
-    const book = await bookModel.findbyId(borrowedBook.bookId);
+    const book = await bookModel.findById(borrowedBook.bookId);
     const user = await userModel.findById(borrowedBook.userId);
 
     if (!borrowedBook) {
@@ -216,7 +211,7 @@ export const librarianReturned = async (req, res) => {
     book.available++;
     book.borrowed--;
 
-    await borrowedBook.drop();
+    await borrowedBooksModel.findByIdAndDelete(borrowedBookId);
     await book.save();
     await user.save();
 
@@ -245,7 +240,7 @@ export const addBook = async (req, res) => {
 
   try {
     const available = total;
-    book.create({
+    await bookModel.create({
       title: title,
       author: author,
       ratings: { count: ratings },
@@ -285,7 +280,7 @@ export const incrementTotal = async (req, res) => {
     if (incrementDirection === "plus") {
       book.total++;
     }
-    if (incrementDirection === "minus") {
+    if (incrementDirection === "minus" && book.total > 0) {
       book.total--;
     }
 
