@@ -9,6 +9,7 @@ import connectDB from "./config/mongodb.js";
 import authRouter from "./routes/authRoutes.js";
 import pageRouter from "./routes/pageRoutes.js";
 import libRouter from "./routes/libRoutes.js";
+import eventsRouter from "./routes/eventsRouter.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -29,6 +30,7 @@ app.use("/api/data/fetch", pageRouter);
 
 // perms
 app.use("/api/library", libRouter);
+app.use("/api/events", eventsRouter);
 
 app.listen(port, () => {
   console.log(`server is running on port ${port}`);

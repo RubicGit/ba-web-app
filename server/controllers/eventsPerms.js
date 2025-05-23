@@ -1,43 +1,185 @@
+// files
+import eventModel from "../models/eventsModel.js";
+import userModel from "../models/userModel.js";
+
 export const addEvent = async (req, res) => {
+  const { title, date, ethDate, coverUrl, description } = req.body;
   const userId = req.userId;
 
-  // requests all event data
+  const user = await userModel.findById(userId);
 
-  // creates new event doc using the data
+  if (!title || !date || !ethDate || !description) {
+    return res.json({
+      success: false,
+      messsage: "Insufficient details",
+    });
+  }
+
+  const finalCoverUrl =
+    coverUrl && user.permRole.includes("event-manager") ? coverUrl : "";
+
+  // if (user.permRole.includes("event-manager")) {
+  //   global = true;
+  // }
+
+  try {
+    await eventModel.create({
+      title,
+      date,
+      ethDate,
+      coverUrl: finalCoverUrl,
+      description,
+      global: false,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Event added",
+    });
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 export const removeEvent = async (req, res) => {
+  const { eventId } = req.body;
   const userId = req.userId;
 
-  // requests the event id
+  if (!eventId) {
+    return res.status(400).json({
+      success: false,
+      message: "Insufficient details",
+    });
+  }
 
-  // finds event by id
+  const user = await userModel.findById(userId);
+  const event = await eventModel.findById(eventId);
 
-  // removes the event from the database
+  if (!event) {
+    return res.status(400).json({
+      success: false,
+      message: "Event not found",
+    });
+  }
 
-  // updates the rendered events data
+  if (event.global === true && !user.permRole.includes("event-manager")) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized to delete",
+    });
+  }
+
+  if (event.userId.toString() !== userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized to delete",
+    });
+  }
+
+  try {
+    await eventModel.findByIdAndDelete(eventId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Event removed",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 export const editEvent = async (req, res) => {
+  const { eventId, title, date, ethDate, coverUrl, description } = req.body;
   const userId = req.userId;
 
-  // takes the input event id
+  if (!title && !date && !ethDate && !description) {
+    return res.json({
+      success: false,
+      message: "No details provided",
+    });
+  }
 
-  // takes the input values
+  try {
+    const user = await userModel.findById(userId);
+    const event = await eventModel.findById(eventId);
 
-  // finds event by id
+    if (!event) {
+      return res.status(400).json({
+        success: false,
+        message: "Event not found",
+      });
+    }
 
-  // updates the input values of each prop
-  // (its the original data by default so if
-  // there is no change, its going to remain
-  // the same)
+    const finalCoverUrl =
+      coverUrl && user.permRole.includes("event-manager")
+        ? coverUrl
+        : event.coverUrl;
+
+    if (title) event.title = title;
+    if (date) event.date = date;
+    if (ethDate) event.ethDate = ethDate;
+    if (description) event.description = description;
+    event.coverUrl = finalCoverUrl;
+
+    await event.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Event edited",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 export const toggleGlobal = async (req, res) => {
+  const { eventId } = req.body;
   const userId = req.userId;
 
-  // takes input event id
+  if (!eventId) {
+    return res.status(400).json({
+      success: false,
+      message: "Insufficient details",
+    });
+  }
 
-  // sets global to true or false depending
-  // the previous value
+  const user = await userModel.findById(userId);
+  const event = await eventModel.findById(eventId);
+
+  if (!event) {
+    return res.status(400).json({
+      success: false,
+      message: "Event not found",
+    });
+  }
+
+  try {
+    if (!user.permRole.includes("event-manager")) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+    event.global = !event.global;
+    await event.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Event globalized",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
