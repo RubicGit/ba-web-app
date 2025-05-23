@@ -3,6 +3,8 @@ import express from "express";
 
 // files
 
-const pageRouter = express.Router();
+const userRouter = express.Router();
 
-export default pageRouter;
+userRouter.post("/data", userAuth, getUserData);
+
+export default userRouter;

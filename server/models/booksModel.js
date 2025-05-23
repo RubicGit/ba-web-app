@@ -14,6 +14,7 @@ const bookSchema = new mongoose.Schema({
   categories: [{ type: String }],
   summary: { type: String },
   coverUrl: { type: String, required: true },
+  display: { type: Boolean, default: false },
 });
 
 const bookModel = mongoose.model.book || mongoose.model("book", bookSchema);

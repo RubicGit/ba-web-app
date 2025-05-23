@@ -297,3 +297,39 @@ export const incrementTotal = async (req, res) => {
     });
   }
 };
+
+export const setDisplay = async (req, res) => {
+  const { bookId } = req.body;
+
+  if (!bookId) {
+    return res.status(400).json({
+      success: false,
+      message: "Insufficient details",
+    });
+  }
+
+  const book = await bookModel.findById(bookId);
+  const displayPrev = book.display;
+
+  if (!book) {
+    return res.status(400).json({
+      success: false,
+      message: "Book not Found",
+    });
+  }
+
+  try {
+    book.display = !displayPrev;
+    await book.save();
+
+    return res.json({
+      success: true,
+      message: "Successfully put book on display",
+    });
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

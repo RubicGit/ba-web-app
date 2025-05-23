@@ -26,11 +26,12 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRouter);
 
 // data
-app.use("/api/data/fetch", pageRouter);
+app.use("/api/user", userRouter);
 
 // perms
 app.use("/api/library", libRouter);
 app.use("/api/events", eventsRouter);
+app.use("/api/homework", hwRouter);
 
 app.listen(port, () => {
   console.log(`server is running on port ${port}`);
