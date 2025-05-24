@@ -5,23 +5,10 @@ import mongoose from "mongoose";
 import borrowedBooksSchema from "./borrowedBooksModel.js";
 
 const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  profileUrl: {
-    type: String,
-    required: true,
-  },
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  profileUrl: { type: String, required: true },
   role: {
     baseRole: {
       type: String,
@@ -39,34 +26,17 @@ const userSchema = new mongoose.Schema({
       default: [],
     },
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  verifyOTP: {
-    type: String,
-    default: "",
-  },
-  verifyOTPExpiresAt: {
-    type: String,
-    default: "",
-  },
-  isVerified: {
-    type: Boolean,
-    default: false,
-  },
-  resetOTP: {
-    type: String,
-    default: "",
-  },
-  resetOTPExpiresAt: {
-    type: String,
-    default: "",
-  },
-  blackList: {
-    type: Boolean,
-    default: false,
-  },
+  createdAt: { type: Date, default: Date.now },
+  verifyOTP: { type: String, default: "" },
+  verifyOTPExpiresAt: { type: String, default: "" },
+  isVerified: { type: Boolean, default: false },
+  resetOTP: { type: String, default: "" },
+  resetOTPExpiresAt: { type: String, default: "" },
+  blackList: { type: Boolean, default: false },
+  hwNotifs: { type: Boolean, default: false },
+  libNotifs: { type: Boolean, default: false },
+  calNotifs: { type: Boolean, default: false },
+  approved: { type: Boolean, default: false },
   class: {
     type: String,
     enum: [
@@ -119,9 +89,6 @@ const userSchema = new mongoose.Schema({
       "12E",
     ],
   },
-  hwNotifs: { type: Boolean, default: false },
-  libNotifs: { type: Boolean, default: false },
-  calNotifs: { type: Boolean, default: false },
 });
 
 const userModel = mongoose.model.user || mongoose.model("user", userSchema);

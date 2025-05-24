@@ -16,11 +16,10 @@ export const addEvent = async (req, res) => {
   }
 
   const finalCoverUrl =
-    coverUrl && user.permRole.includes("event-manager") ? coverUrl : "";
-
-  // if (user.permRole.includes("event-manager")) {
-  //   global = true;
-  // }
+    (coverUrl && user.permRole.includes("event-manager")) ||
+    !user.permRole.includes("admin")
+      ? coverUrl
+      : "";
 
   try {
     await eventModel.create({
@@ -65,7 +64,10 @@ export const removeEvent = async (req, res) => {
     });
   }
 
-  if (event.global === true && !user.permRole.includes("event-manager")) {
+  if (
+    (event.global === true && !user.permRole.includes("event-manager")) ||
+    !user.permRole.includes("admin")
+  ) {
     return res.status(401).json({
       success: false,
       message: "Unauthorized to delete",
@@ -117,7 +119,8 @@ export const editEvent = async (req, res) => {
     }
 
     const finalCoverUrl =
-      coverUrl && user.permRole.includes("event-manager")
+      (coverUrl && user.permRole.includes("event-manager")) ||
+      !user.permRole.includes("admin")
         ? coverUrl
         : event.coverUrl;
 
@@ -163,7 +166,10 @@ export const toggleGlobal = async (req, res) => {
   }
 
   try {
-    if (!user.permRole.includes("event-manager")) {
+    if (
+      !user.permRole.includes("event-manager") ||
+      !user.permRole.includes("admin")
+    ) {
       return res.status(403).json({
         success: false,
         message: "Unauthorized",

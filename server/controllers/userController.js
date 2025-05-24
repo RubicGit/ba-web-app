@@ -42,7 +42,7 @@ export const getUserData = async (req, res) => {
     }
 
     // extra libraian data overrides books and adds borrowed books
-    if (permRole.includes("librarian")) {
+    if (permRole.includes("librarian") || !user.permRole.includes("admin")) {
       data.borrowed = await borrowedBooksModel.find({});
       data.books = await bookModel.find({});
 
@@ -50,7 +50,10 @@ export const getUserData = async (req, res) => {
     }
 
     // extra event manager data removes the global filter
-    if (permRole.includes("event-manager")) {
+    if (
+      permRole.includes("event-manager") ||
+      !user.permRole.includes("admin")
+    ) {
       data.events = await eventModel.find({});
 
       perms.eventManager = true;
