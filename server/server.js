@@ -7,9 +7,11 @@ import "dotenv/config";
 // files
 import connectDB from "./config/mongodb.js";
 import authRouter from "./routes/authRoutes.js";
-import pageRouter from "./routes/pageRoutes.js";
+import userRouter from "./routes/userRoutes.js";
 import libRouter from "./routes/libRoutes.js";
 import eventsRouter from "./routes/eventsRouter.js";
+import hwRouter from "./routes/hwRoutes.js";
+import accountRouter from "./routes/accountRoutes.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -32,6 +34,7 @@ app.use("/api/user", userRouter);
 app.use("/api/library", libRouter);
 app.use("/api/events", eventsRouter);
 app.use("/api/homework", hwRouter);
+app.use("/api/account", accountRouter);
 
 app.listen(port, () => {
   console.log(`server is running on port ${port}`);

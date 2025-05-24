@@ -6,7 +6,7 @@ import userModel from "../models/userModel.js";
 import borrowedBooksModel from "../models/borrowedBooksModel.js";
 import bookModel from "../models/booksModel.js";
 import homeworkModel from "../models/homeworkModel.js";
-import eventModel from "../models/eventModel.js";
+import eventModel from "../models/eventsModel.js";
 import classModel from "../models/classModel.js";
 
 // user data fetch
@@ -19,6 +19,7 @@ export const getUserData = async (req, res) => {
   try {
     const user = await userModel.findById(userId);
     let data = {};
+    let perms = {};
 
     // base role data
     if (baseRole === "student") {
@@ -27,6 +28,8 @@ export const getUserData = async (req, res) => {
       data.books = await bookModel.find({ display: true });
       data.events = await eventModel.find({ global: true });
       data.eventsPersonal = await eventModel.find({ userId: userId });
+
+      perms.student = true;
     }
 
     if (baseRole === "teacher") {
@@ -34,28 +37,37 @@ export const getUserData = async (req, res) => {
       data.books = await bookModel.find({ display: true });
       data.events = await eventModel.find({ global: true });
       data.eventsPersonal = await eventModel.find({ userId: userId });
+
+      perms.teacher = true;
     }
 
     // extra libraian data overrides books and adds borrowed books
     if (permRole.includes("librarian")) {
       data.borrowed = await borrowedBooksModel.find({});
       data.books = await bookModel.find({});
+
+      perms.librarian = true;
     }
 
     // extra event manager data removes the global filter
     if (permRole.includes("event-manager")) {
       data.events = await eventModel.find({});
+
+      perms.eventManager = true;
     }
 
     // extra teacher data allows for selected homework data
     if (permRole.includes("teacher")) {
       data.homework = await homeworkModel.find({ userId: userId });
+
+      perms.teacherPerms = true;
     }
 
     return res.status(200).json({
       success: true,
       message: "Successfully fetched data",
       data: data,
+      perms: perms,
     });
   } catch (error) {
     res.status(500).json({

@@ -1,5 +1,5 @@
-import homeworkModel from "../models/homeworkModel";
-import userModel from "../models/userModel";
+import homeworkModel from "../models/homeworkModel.js";
+import userModel from "../models/userModel.js";
 
 export const autosaveDraft = async (req, res) => {
   const { homeworkId, answer } = req.body;

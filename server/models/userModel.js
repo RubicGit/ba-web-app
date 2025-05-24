@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  profileUrl: {
+    type: String,
+    required: true,
+  },
   role: {
     baseRole: {
       type: String,
@@ -63,7 +67,6 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  borrowedBooks: [borrowedBooksSchema],
   class: {
     type: String,
     enum: [
@@ -116,6 +119,9 @@ const userSchema = new mongoose.Schema({
       "12E",
     ],
   },
+  hwNotifs: { type: Boolean, default: false },
+  libNotifs: { type: Boolean, default: false },
+  calNotifs: { type: Boolean, default: false },
 });
 
 const userModel = mongoose.model.user || mongoose.model("user", userSchema);

@@ -2,13 +2,13 @@
 import express from "express";
 
 // files
-import librarianAuth from "../middleware/LibrarianAuth";
 import {
   addEvent,
   editEvent,
   removeEvent,
   toggleGlobal,
-} from "../controllers/eventsPerms";
+} from "../controllers/eventsPerms.js";
+import userAuth from "../middleware/userAuth.js";
 
 const eventsRouter = express.Router();
 
